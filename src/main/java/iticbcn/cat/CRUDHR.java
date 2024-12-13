@@ -25,21 +25,17 @@ public class CRUDHR {
 
             try (Statement statement = connection.createStatement()) {
                 while ((line = br.readLine()) != null) {
-                    // Ignorar comentaris i línies buides
-                    line = line.trim();
+                    line = line.trim(); // Ignorar comentaris i línies buides
                         
                     if (line.isEmpty() || line.startsWith("--") || line.startsWith("//") || line.startsWith("/*")) {
                             continue;
                     }
-                    // Acumular la línea al buffer
-                    sqlStatement.append(line);
-                    // el caràcter ";" es considera terminació de sentència SQL
-                    if (line.endsWith(";")) {
-                        // Eliminar el ";" i executar la instrucción
-                        String sql = sqlStatement.toString().replace(";", "").trim();
+                    sqlStatement.append(line); // Acumular la línea al buffer
+                    
+                    if (line.endsWith(";")) { // el caràcter ";" es considera terminació de sentència SQL
+                        String sql = sqlStatement.toString().replace(";", "").trim();// Eliminar el ";" i executar la instrucción
                         statement.execute(sql);
-                        // Reiniciar el buffer para la siguiente instrucción
-                        sqlStatement.setLength(0);
+                        sqlStatement.setLength(0);// Reiniciar el buffer para la siguiente instrucción
                     }
                 }
             } catch (SQLException sqle) {
@@ -55,7 +51,7 @@ public class CRUDHR {
     }
 
     //Read sense prepared statements, mostra tots els registres
-    public void ReadAllDatabase(Connection connection, String TableName) throws ConnectException, SQLException {
+    /*public void ReadAllDatabase(Connection connection, String TableName) throws ConnectException, SQLException {
         try (Statement statement = connection.createStatement()) {
             
             String query = "SELECT * FROM " + TableName + ";";
@@ -68,10 +64,22 @@ public class CRUDHR {
                 recorrerRegistres(rset,colNum);
             }
         }
+    }*/
+
+    //Opció per llegir tots els rols que hi ha a la base de dades
+    public void readRols(Connection connection) throws ConnectException, SQLException {
+        String query = "SELECT * FROM Rol";
+        try (PreparedStatement prepstat = connection.prepareStatement(query)) {
+            ResultSet rset = prepstat.executeQuery();
+            int colNum = getColumnNames(rset);
+            if (colNum > 0) {
+                recorrerRegistres(rset, colNum);
+            }
+        }
     }
 
-    
-    public void readRolsId(Connection connection, String TableName, int id) throws ConnectException, SQLException{
+    //Opció per veure tots els rols que hi ha a la base de dades
+    public void readRolById(Connection connection, String TableName, int id) throws ConnectException, SQLException{
         String query = "SELECT * FROM "+ TableName + "WHERE Id = ?";
         try (PreparedStatement prepstat = connection.prepareStatement(query)) {
             prepstat.setInt(1, id);
@@ -97,56 +105,10 @@ public class CRUDHR {
             
     }
 
-    /*public void ReadDepartamentsId(Connection connection, String TableName, int id) 
-    throws ConnectException, SQLException {
-
-        String query = "SELECT * FROM " + TableName + " WHERE department_id = ?";
-
-        try (PreparedStatement prepstat = connection.prepareStatement(query)) {
-
-            prepstat.setInt(1, id);
-            ResultSet rset = prepstat.executeQuery();
-
-            int colNum = getColumnNames(rset);
-
-            //Si el nombre de columnes és >0 procedim a llegir i mostrar els registres
-            if (colNum > 0) {
-
-                recorrerRegistres(rset,colNum);
-
-            }
-        }
-    }*/
-
-    public void ReadSalaries(Connection connection, String TableName, float salMin, float salMax) 
-    throws ConnectException, SQLException {
-
-        String query = "SELECT EMPLOYEE_ID, FIRST_NAME, LAST_NAME, SALARY FROM " 
-                     + TableName + " WHERE salary BETWEEN ? AND ?";
-
-        try (PreparedStatement prepstat = connection.prepareStatement(query)) {
-
-            prepstat.setFloat(1, salMin);
-            prepstat.setFloat(2, salMax);
-            ResultSet rset = prepstat.executeQuery();
-
-            int colNum = getColumnNames(rset);
-
-            //Si el nombre de columnes és >0 procedim a llegir i mostrar els registres
-            if (colNum > 0) {
-
-                recorrerRegistres(rset,colNum);
-
-            }
-        }
-    }
-
-
-//Aquest mètode auxiliar podria ser utileria del READ, mostra el nom de les columnes i quantes n'hi ha
+    //Aquest mètode auxiliar podria ser utileria del READ, mostra el nom de les columnes i quantes n'hi ha
     public static int getColumnNames(ResultSet rs) throws SQLException {
         
         int numberOfColumns = 0;
-        
         if (rs != null) {   
             ResultSetMetaData rsMetaData = rs.getMetaData();
             numberOfColumns = rsMetaData.getColumnCount();   
@@ -156,10 +118,7 @@ public class CRUDHR {
                 System.out.print(columnName + ", ");
             }
         }
-        
         System.out.println();
-
         return numberOfColumns;
-        
     }
 }
