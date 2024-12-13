@@ -101,10 +101,24 @@ public class CRUDHR {
                 System.out.print(rs.getString(i+1)+ ", ");
                 }
             } 
-        }
-            
+        }   
     }
 
+    //Opció per inserir un rol a la base de dades
+    public void inserirRol(Connection connection, int rolId, String nom) throws SQLException{
+        String query = "INSERT INTO Rol (rolId, nom) VALUES (?,?)";
+        try (PreparedStatement prepstat = connection.prepareStatement(query)) {
+            prepstat.setInt(1, rolId);
+            prepstat.setString(2, nom);
+            int rowsAffected = prepstat.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Rol inserit correctament.");
+            } else {
+                System.out.println("No s'ha pogut inserir el rol.");
+            }
+        }
+    }
+    
     //Aquest mètode auxiliar podria ser utileria del READ, mostra el nom de les columnes i quantes n'hi ha
     public static int getColumnNames(ResultSet rs) throws SQLException {
         
