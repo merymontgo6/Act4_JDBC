@@ -50,22 +50,6 @@ public class CRUDHR {
         return dupRecord;
     }
 
-    //Read sense prepared statements, mostra tots els registres
-    /*public void ReadAllDatabase(Connection connection, String TableName) throws ConnectException, SQLException {
-        try (Statement statement = connection.createStatement()) {
-            
-            String query = "SELECT * FROM " + TableName + ";";
-
-            ResultSet rset = statement.executeQuery(query);
-            //obtenim numero de columnes i nom
-            int colNum = getColumnNames(rset);
-            //Si el nombre de columnes és >0 procedim a llegir i mostrar els registres
-            if (colNum > 0) {
-                recorrerRegistres(rset,colNum);
-            }
-        }
-    }*/
-
     //Opció per llegir tots els rols que hi ha a la base de dades
     public void readRols(Connection connection) throws ConnectException, SQLException {
         String query = "SELECT * FROM Rol";
