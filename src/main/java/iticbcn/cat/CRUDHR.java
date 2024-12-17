@@ -62,7 +62,7 @@ public class CRUDHR {
         }
     }
 
-    //Opció per veure tots els rols que hi ha a la base de dades
+    //Opció per veure tots els rols per el seu id que hi ha a la base de dades
     public void readRolById(Connection connection, String TableName, int id) throws ConnectException, SQLException{
         String query = "SELECT * FROM "+ TableName + "WHERE Id = ?";
         try (PreparedStatement prepstat = connection.prepareStatement(query)) {
@@ -75,7 +75,7 @@ public class CRUDHR {
         }
     }
 
-    public void recorrerRegistres(ResultSet rs, int ColNum) throws SQLException {
+    public static void recorrerRegistres(ResultSet rs, int ColNum) throws SQLException {
         while(rs.next()) {
             for(int i =0; i<ColNum; i++) {
                 if(i+1 == ColNum) {
@@ -86,6 +86,18 @@ public class CRUDHR {
                 }
             } 
         }   
+    }
+
+    //Opció per llegir de 10 en 10 els registres de la taula
+    public static void readRolsby10 (Connection connection) throws SQLException {
+        String query = "SELECT * FROM Rol ORDER BY rolId ASC LIMIT 10 OFFSET 0";
+        try (PreparedStatement prepstat = connection.prepareStatement(query)) {
+            ResultSet rset= prepstat.executeQuery();
+            int colNum = getColumnNames(rset);
+            if (colNum > 0 ) {
+                recorrerRegistres(rset, colNum);
+            }
+        }
     }
 
     //Opció per inserir un rol a la base de dades
@@ -119,4 +131,14 @@ public class CRUDHR {
         System.out.println();
         return numberOfColumns;
     }
+    
+    //Opció per modificar els camps de la taula Rol
+    public void modificarRol(Connection connection, int rolId) throws SQLException {
+        String query = "SELECT * FROM Rol WHERE rolId = %s";
+        String updateQuery = "UPDATE Rol SET nom = ? WHERE rolId = ?";
+        try (PreparedStatement prepstat = connection.prepareStatement(query)) {
+            prepstat.setInt(1, rolId);
+        }
+    }
+
 }

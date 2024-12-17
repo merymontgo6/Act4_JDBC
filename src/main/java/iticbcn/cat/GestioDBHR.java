@@ -14,12 +14,10 @@ import org.jline.terminal.TerminalBuilder;
 
 public class GestioDBHR {
     static boolean sortirapp = false;
-    static boolean DispOptions = true;
         
     public static void main(String[] args) {
     
             try (BufferedReader br1 = new BufferedReader(new InputStreamReader(System.in))) {
-    
                 try {
                     Properties properties = new Properties(); // Carregar propietats des de l'arxiu
                     try (InputStream input = GestioDBHR.class.getClassLoader().getResourceAsStream("config.properties")) {
@@ -44,7 +42,6 @@ public class GestioDBHR {
                             while (sortirapp == false) {
                                 MenuOptions(br1,crudbhr,connection);
                             }
-
                     } catch (Exception e) {
                         System.err.println("Error al conectar: " + e.getMessage());
                     }
@@ -52,7 +49,6 @@ public class GestioDBHR {
                     System.err.println("Error al carregar fitxer de propietats: " + e.getMessage());
                 }
             } finally {}
-            
         } catch (IOException e) {
             e.printStackTrace();
         }
