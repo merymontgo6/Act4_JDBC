@@ -63,17 +63,17 @@ public class CRUDHR {
     }
 
     //Opció per veure tots els rols per el seu id que hi ha a la base de dades
-    public void readRolById(Connection connection, String TableName, int id) throws ConnectException, SQLException {
-        String query = "SELECT * FROM " + TableName + " WHERE rolId = ?";
+    public void readRolById(Connection connection, String TableName, int id) throws ConnectException, SQLException { 
+        String query = "SELECT * FROM " + TableName + " WHERE ROLD_ID = ?";  // Canvia rolId a ROLD_ID
         try (PreparedStatement prepstat = connection.prepareStatement(query)) {
             prepstat.setInt(1, id);
             ResultSet rset = prepstat.executeQuery();
             int colNum = getColumnNames(rset);
-            if (colNum > 0){
+            if (colNum > 0) {
                 recorrerRegistres(rset, colNum);
             }
         }
-    }
+    }        
 
     public static void recorrerRegistres(ResultSet rs, int ColNum) throws SQLException {
         while(rs.next()) {
