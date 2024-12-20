@@ -11,7 +11,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Scanner;
 
 public class CRUDHR {
     //crea i modifica info
@@ -145,52 +144,53 @@ public class CRUDHR {
     }
     
     //Opció per modificar els camps de la taula Rol
-    public void modificarRol(Connection connection, int rolId) throws SQLException {
-    // Consulta per obtenir el registre actual
-    String selectQuery = "SELECT * FROM Rol WHERE rolId = ?";
-    // Consulta per actualitzar el registre
-    String updateQuery = "UPDATE Rol SET nom = ? WHERE rolId = ?";
-
-    try (PreparedStatement selectStmt = connection.prepareStatement(selectQuery);
-         PreparedStatement updateStmt = connection.prepareStatement(updateQuery)) {
-
-        // Establir el rolId per obtenir el registre
-        selectStmt.setInt(1, rolId);
-        ResultSet rs = selectStmt.executeQuery();
-
-        // Comprovar si el registre existeix
-        if (rs.next()) {
-            // Mostrar l'actual valor del camp
-            String nomActual = rs.getString("nom");
-            System.out.println("Nom actual: " + nomActual);
-
-            // Preguntar per l'usuari el nou valor
-            Scanner scanner = new Scanner(System.in);
-            System.out.print("Introdueix el nou nom: ");
-            String nouNom = scanner.nextLine();
-
-            // Preparar i executar la consulta d'actualització
-            updateStmt.setString(1, nouNom);
-            updateStmt.setInt(2, rolId);
-            int rowsAffected = updateStmt.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("El camp s'ha actualitzat correctament.");
+    public void modificarRol(Connection connection, String TableName, int rolId, BufferedReader br) throws SQLException, IOException {
+        // Consulta per obtenir el registre actual
+        String selectQuery = "SELECT * FROM " + TableName + " WHERE rolId = ?";
+        // Consulta per actualitzar el registre
+        String updateQuery = "UPDATE " + TableName + " SET nom = ? WHERE rolId = ?";
+    
+        try (PreparedStatement selectStmt = connection.prepareStatement(selectQuery);
+             PreparedStatement updateStmt = connection.prepareStatement(updateQuery)) {
+    
+            // Establir el rolId per obtenir el registre
+            selectStmt.setInt(1, rolId);
+            ResultSet rs = selectStmt.executeQuery();
+    
+            // Comprovar si el registre existeix
+            if (rs.next()) {
+                // Mostrar l'actual valor del camp 'nom'
+                String nomActual = rs.getString("nom");
+                System.out.println("Nom actual: " + nomActual);
+    
+                // Demanar per l'usuari el nou valor mitjançant BufferedReader
+                System.out.print("Introdueix el nou nom: ");
+                String nouNom = br.readLine();  // Llegeix el valor introduït per l'usuari
+    
+                // Preparar i executar la consulta d'actualització
+                updateStmt.setString(1, nouNom);
+                updateStmt.setInt(2, rolId);
+                int rowsAffected = updateStmt.executeUpdate();
+    
+                // Comprovar si l'actualització va tenir èxit
+                if (rowsAffected > 0) {
+                    System.out.println("El camp s'ha actualitzat correctament.");
+                } else {
+                    System.out.println("No s'ha pogut actualitzar el registre.");
+                }
             } else {
-                System.out.println("No s'ha pogut actualitzar el registre.");
+                System.out.println("No existeix cap registre amb rolId = " + rolId);
             }
-        } else {
-            System.out.println("No existeix cap registre amb rolId = " + rolId);
-        }}
+        }
     }
-
+    
     //Opció per esborrar registre de taula per id
-    public static void esborrarRol(Connection connection, int rolId) throws SQLException {
-        String query = "DELETE FROM Rol WHERE rolId = ?";
+    public void esborrarRol(Connection connection, String TableName, int rolId) throws SQLException {
+        String query = "DELETE FROM " + TableName + " WHERE rolId = ?";
         try (PreparedStatement prepstat = connection.prepareStatement(query)){
             prepstat.setInt(1, rolId);
             int rowsAffected = prepstat.executeUpdate();
-
+    
             // Confirmació
             if (rowsAffected > 0) {
                 System.out.println("El registre amb rolId = " + rolId + " s'ha esborrat correctament.");
@@ -198,8 +198,9 @@ public class CRUDHR {
                 System.out.println("No s'ha trobat cap registre amb rolId = " + rolId + ".");
             }
         }
-    }
+    }    
 
+    //Opció de cerca per LIKE
     public void readRolsByLike(Connection connection, String tableName, String fieldName, String searchValue) throws SQLException {
         String query = "SELECT * FROM " + tableName + " WHERE " + fieldName + " LIKE ?";
         

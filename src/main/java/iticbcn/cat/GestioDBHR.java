@@ -110,21 +110,21 @@ public class GestioDBHR {
 
                 break;
             case 2:
-                crudbhr.readRols(connection, "ROLS");
+                crudbhr.readRols(connection, "ROL");
                 break;
 
             case 3:
                 int rolId = demanarId(br);
-                crudbhr.readRolById(connection, "ROLS", rolId);
+                crudbhr.readRolById(connection, "ROL", rolId);
                 break;
 
             case 4:
                 String nom = demanarRolValors(br);
-                crudbhr.inserirRol(connection, "ROLS", nom);
+                crudbhr.inserirRol(connection, "ROL", nom);
                 break;
 
             case 5:
-                crudbhr.readRolsby10(connection, "ROLS");
+                crudbhr.readRolsby10(connection, "ROL");
                 break;
             
             case 6:
@@ -134,7 +134,17 @@ public class GestioDBHR {
                 String searchValueLike = valorsLike[1];  // Valor de cerca amb LIKE
             
                 // Consulta amb LIKE
-                crudbhr.readRolsByLike(connection, "ROLS", fieldNameLike, searchValueLike);
+                crudbhr.readRolsByLike(connection, "ROL", fieldNameLike, searchValueLike);
+                break;
+
+            case 7:
+                rolId = demanarId(br);
+                crudbhr.esborrarRol(connection, "ROL", rolId);
+                break;
+            
+            case 8:
+                rolId = demanarId(br);
+                crudbhr.modificarRol(connection, "ROL", rolId, br);
                 break;
             
             case 9:
@@ -182,7 +192,6 @@ public class GestioDBHR {
         // Preguntem el valor de cerca amb LIKE
         System.out.print("Introdueix el valor de cerca amb '%': ");
         String searchValue = br.readLine();
-        
         return new String[] {fieldName, searchValue};
     }
 }
