@@ -156,7 +156,7 @@ public class GestioDBHR {
                 crudbhr.modificarRol(connection, "ROL", rolId, br);
                 break;
             
-            case 9:
+            case 0:
                 sortirapp = true;
                 break;
 
