@@ -14,7 +14,8 @@ import org.jline.terminal.TerminalBuilder;
 
 public class GestioDBHR {
     static boolean sortirapp = false;
-        
+    static boolean DispOptions = true;
+
     public static void main(String[] args) {
     
             try (BufferedReader br1 = new BufferedReader(new InputStreamReader(System.in))) {
@@ -32,7 +33,7 @@ public class GestioDBHR {
                         try (Connection connection = DriverManager.getConnection(dbUrl, dbUser, dbPassword)) {
                             System.out.println("Conexió exitosa");
         
-                            String File_create_script = "db_scripts/DB_Schema_HR.sql" ;
+                            String File_create_script = "db_scripts/DB_Schema_Rols.sql" ;
         
                             InputStream input_sch = GestioDBHR.class.getClassLoader().getResourceAsStream(File_create_script);
         
@@ -61,6 +62,9 @@ public class GestioDBHR {
 
         String message = "";
 
+        message = "==================";
+        printScreen(terminal, message);
+
         message = "OPCIONS";
         printScreen(terminal, message);
 
@@ -71,6 +75,12 @@ public class GestioDBHR {
         printScreen(terminal, message);
 
         message = "3. CONSULTAR PER ID";
+        printScreen(terminal, message);
+
+        message = "4. INSERIR VALORS";
+        printScreen(terminal, message);
+
+        message = "5. MOSTRAR VALORS 10";
         printScreen(terminal, message);
 
         message = "0. SORTIR";
@@ -88,7 +98,7 @@ public class GestioDBHR {
 
         switch(opcio) {
             case 1:
-                String File_data_script = "db_scripts/DB_Data_HR.sql" ;
+                String File_data_script = "db_scripts/DB_Data_Rols.sql" ;
     
                 InputStream input_data = GestioDBHR.class.getClassLoader().getResourceAsStream(File_data_script);
 
@@ -100,13 +110,33 @@ public class GestioDBHR {
 
                 break;
             case 2:
-                crudbhr.readRols(connection);
+                crudbhr.readRols(connection, "ROLS");
                 break;
 
             case 3:
-                crudbhr.readRolById(connection, message, opcio);
+                int rolId = demanarId(br);
+                crudbhr.readRolById(connection, "ROLS", rolId);
                 break;
 
+            case 4:
+                String nom = demanarRolValors(br);
+                crudbhr.inserirRol(connection, "ROLS", nom);
+                break;
+
+            case 5:
+                crudbhr.readRolsby10(connection, "ROLS");
+                break;
+            
+            case 6:
+                // Demanem els valors per a la cerca amb LIKE
+                String[] valorsLike = demanarValorsCercaLike(br);
+                String fieldNameLike = valorsLike[0];  // Nom del camp per cercar
+                String searchValueLike = valorsLike[1];  // Valor de cerca amb LIKE
+            
+                // Consulta amb LIKE
+                crudbhr.readRolsByLike(connection, "ROLS", fieldNameLike, searchValueLike);
+                break;
+            
             case 9:
                 sortirapp = true;
                 break;
@@ -124,5 +154,35 @@ public class GestioDBHR {
             Thread.sleep(10);
         }
         System.out.println();
+    }
+
+    //metode per obtenir id del rol
+    public static int demanarId (BufferedReader br) throws SQLException, NumberFormatException, IOException {
+        
+            System.out.println("Introdueix el id: ");
+            int rolId = Integer.parseInt(br.readLine());
+        
+        return rolId;
+    }
+
+    //metode per demanar el nom del rol
+    public static String demanarRolValors (BufferedReader br) throws IOException {
+        System.out.println("Introdueix el nom: ");
+        String nom = br.readLine();
+
+        return  nom;
+    }
+
+    // Demanem a l'usuari que introdueixi un valor per buscar
+    public static String[] demanarValorsCercaLike(BufferedReader br) throws IOException {
+        // Preguntem el nom del camp
+        System.out.print("Introdueix el nom del camp per cercar (ex: NOM, rolId, etc.): ");
+        String fieldName = br.readLine();
+        
+        // Preguntem el valor de cerca amb LIKE
+        System.out.print("Introdueix el valor de cerca amb '%': ");
+        String searchValue = br.readLine();
+        
+        return new String[] {fieldName, searchValue};
     }
 }

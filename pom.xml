@@ -13,12 +13,18 @@
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
     <dependencies>
-        <dependency>        <!-- JLine Library -->
-            <groupId>org.jline</groupId>
-            <artifactId>jline</artifactId>
-            <version>3.21.0</version>
-        </dependency>
-    </dependencies>
+    <!-- JLine Library -->
+    <dependency>
+        <groupId>org.jline</groupId>
+        <artifactId>jline</artifactId>
+        <version>3.21.0</version>
+    </dependency>
 
-
+    <!-- MariaDB JDBC Driver -->
+    <dependency>
+        <groupId>org.mariadb.jdbc</groupId>
+        <artifactId>mariadb-java-client</artifactId>
+        <version>3.0.6</version> <!-- Usa la versión más reciente disponible -->
+    </dependency>
+</dependencies>
 </project>

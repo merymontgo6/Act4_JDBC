@@ -52,10 +52,10 @@ public class CRUDHR {
     }
 
     //Opció per llegir tots els rols que hi ha a la base de dades
-    public void readRols(Connection connection) throws ConnectException, SQLException {
-        String query = "SELECT * FROM Rol";
-        try (PreparedStatement prepstat = connection.prepareStatement(query)) {
-            ResultSet rset = prepstat.executeQuery();
+    public void readRols(Connection connection, String TableName) throws ConnectException, SQLException {
+        try (Statement statement = connection.createStatement()) {
+            String query = "SELECT * FROM " + TableName + ";";
+            ResultSet rset = statement.executeQuery(query);
             int colNum = getColumnNames(rset);
             if (colNum > 0) {
                 recorrerRegistres(rset, colNum);
@@ -64,8 +64,8 @@ public class CRUDHR {
     }
 
     //Opció per veure tots els rols per el seu id que hi ha a la base de dades
-    public void readRolById(Connection connection, String TableName, int id) throws ConnectException, SQLException{
-        String query = "SELECT * FROM "+ TableName + "WHERE Id = ?";
+    public void readRolById(Connection connection, String TableName, int id) throws ConnectException, SQLException {
+        String query = "SELECT * FROM " + TableName + " WHERE rolId = ?";
         try (PreparedStatement prepstat = connection.prepareStatement(query)) {
             prepstat.setInt(1, id);
             ResultSet rset = prepstat.executeQuery();
@@ -90,28 +90,39 @@ public class CRUDHR {
     }
 
     //Opció per llegir de 10 en 10 els registres de la taula
-    public static void readRolsby10 (Connection connection) throws SQLException {
-        String query = "SELECT * FROM Rol ORDER BY rolId ASC LIMIT 10 OFFSET 0";
-        try (PreparedStatement prepstat = connection.prepareStatement(query)) {
-            ResultSet rset= prepstat.executeQuery();
-            int colNum = getColumnNames(rset);
-            if (colNum > 0 ) {
-                recorrerRegistres(rset, colNum);
+    public void readRolsby10 (Connection connection, String TableName) throws SQLException {
+        int offset = 0;
+        boolean mesValors = true;
+
+        while (mesValors){
+            String query = "SELECT * FROM " + TableName + " ORDER BY rolId ASC LIMIT 10 OFFSET " + offset;
+            try (PreparedStatement prepstat = connection.prepareStatement(query)) {
+                ResultSet rset= prepstat.executeQuery();
+
+                if (rset.next()) { //comprova si hi ha regustres
+                    do { 
+                        int colNum = getColumnNames(rset);
+                        recorrerRegistres(rset, colNum);
+                    } while (rset.next());
+                    offset += 10; //afegeix 10 mes
+                    } else {
+                    mesValors = false;
+                }
             }
         }
     }
 
     //Opció per inserir un rol a la base de dades
-    public void inserirRol(Connection connection, int rolId, String nom) throws SQLException{
-        String query = "INSERT INTO Rol (rolId, nom) VALUES (?,?)";
+    public void inserirRol(Connection connection, String TableName, String nom) throws SQLException {
+        String query = "INSERT INTO " + TableName + "(NOM) VALUES (?)";
         try (PreparedStatement prepstat = connection.prepareStatement(query)) {
-            prepstat.setInt(1, rolId);
-            prepstat.setString(2, nom);
+            prepstat.setString(1, nom);
             int rowsAffected = prepstat.executeUpdate();
+
             if (rowsAffected > 0) {
-                System.out.println("Rol inserit correctament.");
+                System.out.println("Dada inserida correctament a la taula: " + TableName);
             } else {
-                System.out.println("No s'ha pogut inserir el rol.");
+                System.out.println("No s'ha pogut inserir la dada a la taula: " + TableName);
             }
         }
     }
@@ -188,4 +199,23 @@ public class CRUDHR {
             }
         }
     }
+
+    public void readRolsByLike(Connection connection, String tableName, String fieldName, String searchValue) throws SQLException {
+        String query = "SELECT * FROM " + tableName + " WHERE " + fieldName + " LIKE ?";
+        
+        try (PreparedStatement prepstat = connection.prepareStatement(query)) {
+            // Afegim el valor de la cerca amb '%' per a la cerca parcial
+            prepstat.setString(1, "%" + searchValue + "%");
+            
+            ResultSet rset = prepstat.executeQuery();
+            
+            if (rset.next()) {
+                int colNum = getColumnNames(rset);
+                recorrerRegistres(rset, colNum);    // mostrar els registres
+            } else {
+                System.out.println("No s'han trobat registres amb aquest valor.");
+            }
+        }
+    }    
+    
 }
