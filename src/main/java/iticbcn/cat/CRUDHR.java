@@ -148,9 +148,9 @@ public class CRUDHR {
     //Opció per modificar els camps de la taula Rol
     public void modificarRol(Connection connection, String TableName, int rolId, BufferedReader br) throws SQLException, IOException {
         // Consulta per obtenir el registre actual
-        String selectQuery = "SELECT * FROM " + TableName + " WHERE rolId = ?";
+        String selectQuery = "SELECT * FROM " + TableName + " WHERE ROLD_ID = ?"; // Canviat 'rolId' per 'ROLD_ID'
         // Consulta per actualitzar el registre
-        String updateQuery = "UPDATE " + TableName + " SET nom = ? WHERE rolId = ?";
+        String updateQuery = "UPDATE " + TableName + " SET nom = ? WHERE ROLD_ID = ?"; // Canviat 'rolId' per 'ROLD_ID'
     
         try (PreparedStatement selectStmt = connection.prepareStatement(selectQuery);
              PreparedStatement updateStmt = connection.prepareStatement(updateQuery)) {
@@ -181,10 +181,10 @@ public class CRUDHR {
                     System.out.println("No s'ha pogut actualitzar el registre.");
                 }
             } else {
-                System.out.println("No existeix cap registre amb rolId = " + rolId);
+                System.out.println("No existeix cap registre amb ROLD_ID = " + rolId);
             }
         }
-    }
+    }    
     
     //Opció per esborrar registre de taula per id
     public void esborrarRol(Connection connection, String TableName, int rolId) throws SQLException {
