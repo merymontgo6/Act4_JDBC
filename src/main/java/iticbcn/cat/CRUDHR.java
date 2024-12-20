@@ -89,27 +89,29 @@ public class CRUDHR {
     }
 
     //Opció per llegir de 10 en 10 els registres de la taula
-    public void readRolsby10 (Connection connection, String TableName) throws SQLException {
+    public void readRolsby10(Connection connection, String TableName) throws SQLException {
         int offset = 0;
         boolean mesValors = true;
-
-        while (mesValors){
-            String query = "SELECT * FROM " + TableName + " ORDER BY rolId ASC LIMIT 10 OFFSET " + offset;
+    
+        while (mesValors) {
+            // Corregim la columna i la consulta SQL
+            String query = "SELECT * FROM " + TableName + " ORDER BY ROLD_ID ASC LIMIT 10 OFFSET " + offset;
             try (PreparedStatement prepstat = connection.prepareStatement(query)) {
-                ResultSet rset= prepstat.executeQuery();
-
-                if (rset.next()) { //comprova si hi ha regustres
+                ResultSet rset = prepstat.executeQuery();
+    
+                if (rset.next()) { // Comprova si hi ha registres
                     do { 
                         int colNum = getColumnNames(rset);
                         recorrerRegistres(rset, colNum);
                     } while (rset.next());
-                    offset += 10; //afegeix 10 mes
-                    } else {
-                    mesValors = false;
+                    offset += 10; // Afegeix 10 més
+                } else {
+                    mesValors = false; // No hi ha més valors
                 }
             }
         }
     }
+    
 
     //Opció per inserir un rol a la base de dades
     public void inserirRol(Connection connection, String TableName, String nom) throws SQLException {
@@ -186,37 +188,44 @@ public class CRUDHR {
     
     //Opció per esborrar registre de taula per id
     public void esborrarRol(Connection connection, String TableName, int rolId) throws SQLException {
-        String query = "DELETE FROM " + TableName + " WHERE rolId = ?";
+        String query = "DELETE FROM " + TableName + " WHERE ROLD_ID = ?"; // Canviar 'rolId' per 'ROLD_ID'
         try (PreparedStatement prepstat = connection.prepareStatement(query)){
             prepstat.setInt(1, rolId);
             int rowsAffected = prepstat.executeUpdate();
     
             // Confirmació
             if (rowsAffected > 0) {
-                System.out.println("El registre amb rolId = " + rolId + " s'ha esborrat correctament.");
+                System.out.println("El registre amb ROLD_ID = " + rolId + " s'ha esborrat correctament.");
             } else {
-                System.out.println("No s'ha trobat cap registre amb rolId = " + rolId + ".");
+                System.out.println("No s'ha trobat cap registre amb ROLD_ID = " + rolId + ".");
             }
         }
-    }    
+    }       
 
     //Opció de cerca per LIKE
     public void readRolsByLike(Connection connection, String tableName, String fieldName, String searchValue) throws SQLException {
+        // Verificar que el camp existeixi
+        if (!fieldName.equals("ROLD_ID") && !fieldName.equals("NOM")) {
+            System.out.println("El nom del camp no és vàlid.");
+            return;
+        }
+    
+        // Consulta amb LIKE
         String query = "SELECT * FROM " + tableName + " WHERE " + fieldName + " LIKE ?";
-        
+    
         try (PreparedStatement prepstat = connection.prepareStatement(query)) {
             // Afegim el valor de la cerca amb '%' per a la cerca parcial
             prepstat.setString(1, "%" + searchValue + "%");
-            
+    
             ResultSet rset = prepstat.executeQuery();
-            
+    
             if (rset.next()) {
                 int colNum = getColumnNames(rset);
-                recorrerRegistres(rset, colNum);    // mostrar els registres
+                recorrerRegistres(rset, colNum);    // Mostrar els registres
             } else {
                 System.out.println("No s'han trobat registres amb aquest valor.");
             }
         }
-    }    
-    
+    }
+        
 }

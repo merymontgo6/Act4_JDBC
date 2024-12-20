@@ -83,6 +83,15 @@ public class GestioDBHR {
         message = "5. MOSTRAR VALORS 10";
         printScreen(terminal, message);
 
+        message = "6. CERCA PER LIKE";
+        printScreen(terminal, message);
+
+        message = "7. ESBORRAR ROL";
+        printScreen(terminal, message);
+
+        message = "8. MODIFICAR ROL";
+        printScreen(terminal, message);
+
         message = "0. SORTIR";
         printScreen(terminal, message);
 
